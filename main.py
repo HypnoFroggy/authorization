@@ -8,6 +8,13 @@ def main():
     return render_template("index.html")
 @app.route("/login", methods=["POST"])
 def login():
-    print(str(request.form["username"]))
-    print(str(request.form["password"]))
-    return render_template("index.html")
+    if auth(request.form["username"], request.form["password"]):
+        return render_template("index.html")
+    else:
+        return render_template("me.html")
+
+def auth(login, password):
+    if True:
+        return True
+    else:
+        return false
