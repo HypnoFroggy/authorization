@@ -6,7 +6,7 @@
 </head>
 <body>
     <form action="" method="post">
-        <p>
+    <p>
 	    <label for="username">Username</label>
 	    <input type="text" name="username">
 	</p>
@@ -14,6 +14,15 @@
 	    <label for="password">Password</label>
 	    <input type="password" name="password">
 	</p>
+	{% if validator %}
+		<h style="color: red; font-size: 2rem">This is required field</h>
+	{% endif %}
+	{% if data[0] %}
+		<h style="color: red; font-size: 2rem"> Password is incorrect </h>
+	{% endif %}
+	{% if data[1] %}
+		<h style="color: red; font-size: 2rem"> Account does not exist </h>
+	{% endif %}
 	<p>
 	    <input type="submit">
 	</p>
