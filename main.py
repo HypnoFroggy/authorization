@@ -7,7 +7,7 @@ app = Flask(__name__)
 conn = psycopg2.connect(
     database="servise_db",
     user="postgres",
-    password="password",
+    password="pdpdpcd",
     host="localhost",
     port="5432"
 )
@@ -17,6 +17,8 @@ cursor = conn.cursor()
 @app.route("/login", methods=["POST", "GET"])
 def login():
     if request.method == "POST":
+        data = {}
+        data['NAME'] = 'aaaa'
         login = request.form["username"]
         password = request.form["password"]
         if login == "": return render_template("index.html", validator=True, data=[False, False, True])
@@ -28,7 +30,7 @@ def login():
             valid = checkLogin(login)
             return render_template("index.html", data=[valid, not valid])
     elif request.method == "GET":
-        return render_template("index.html")
+        return render_template("index.html", validator=False, data=[False, False, False])
 
 
 def auth(login, password):
