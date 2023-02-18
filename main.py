@@ -1,5 +1,5 @@
 import requests
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 import psycopg2
 
 app = Flask(__name__)
@@ -7,7 +7,7 @@ app = Flask(__name__)
 conn = psycopg2.connect(
     database="servise_db",
     user="postgres",
-    password="pdpdpcd",
+    password="dfgrtgrt",
     host="localhost",
     port="5432"
 )
@@ -16,22 +16,51 @@ cursor = conn.cursor()
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
+    errors = {}
     if request.method == "POST":
-        data = {}
-        data['NAME'] = 'aaaa'
-        login = request.form["username"]
-        password = request.form["password"]
-        if login == "": return render_template("index.html", validator=True, data=[False, False, True])
-        if password == "": return render_template("index.html", validator=True, data=[False, False, True])
-        records = auth(login, password)
-        if len(records) != 0:
-            return render_template("me.html", data=records[0])
-        else:
-            valid = checkLogin(login)
-            return render_template("index.html", data=[valid, not valid])
+        if request.form.get("login"):
+            errors = {}
+            login = request.form["username"]
+            password = request.form["password"]
+            if login == "" or password == "":
+                errors["empty_field"] = True
+                return render_template("index.html", errors=errors)
+            records = auth(login, password)
+            if len(records) != 0:
+                return render_template("me.html", data=records[0])
+            else:
+                errors["wrong_data"] = True
+                return render_template("index.html", errors=errors)
+        elif request.form.get("registration"):
+            return redirect("/registration")
     elif request.method == "GET":
-        return render_template("index.html", validator=False, data=[False, False, False])
+        return render_template("index.html", errors=errors)
 
+@app.route("/registration", methods=["GET", "POST"])
+def registration():
+    errors = {}
+    if request.method == "GET":
+        return render_template("registration.html")
+    if request.method == "POST":
+        name = request.form["name"]
+        login = request.form["login"]
+        password = request.form["password"]
+        if login == "" or name == "" or password == "":
+            errors["empty_field"] = True
+            return render_template("registration.html", errors=errors)
+        if checkLogin(login):
+            errors["busy_login"] = True
+            return render_template("registration.html", errors=errors)
+        if len(password) < 8:
+            errors["short_password"] = True
+            return render_template("registration.html", errors=errors)
+        registr(name, login, password)
+        return redirect("/login")
+
+def registr(name, login, password):
+    cursor.execute("INSERT INTO servise.users (full_name, login, password) VALUES (%s, %s, %s)",
+                    (str(name), str(login), str(password)))
+    conn.commit()
 
 def auth(login, password):
     cursor.execute("SELECT * FROM servise.users WHERE login=%s AND password=%s", (str(login), str(password)))
@@ -41,9 +70,9 @@ def auth(login, password):
 def checkLogin(login):
     cursor.execute("SELECT * FROM servise.users WHERE login='%s'" % (str(login)))
     records = list(cursor.fetchall())
-    if len(records) == 0:
-        loginInDB = False
-    else:
+    if records:
         loginInDB = True
+    else:
+        loginInDB = False
     return loginInDB
 

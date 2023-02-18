@@ -6,26 +6,25 @@
 </head>
 <body>
     <form action="" method="post">
-    <p>
-	    <label for="username">Username</label>
-	    <input type="text" name="username">
-	</p>
-	<p>
-	    <label for="password">Password</label>
-	    <input type="password" name="password">
-	</p>
-	{% if validator %}
-		<h style="color: red; font-size: 2rem">This is required field</h>
-	{% endif %}
-	{% if data[0] %}
-		<h style="color: red; font-size: 2rem"> Password is incorrect </h>
-	{% endif %}
-	{% if data[1] %}
-		<h style="color: red; font-size: 2rem"> Account does not exist </h>
-	{% endif %}
-	<p>
-	    <input type="submit">
-	</p>
+        <p>
+             <label for="username">Username</label>
+             <input type="text" name="username">
+        </p>
+        <p>
+             <label for="password">Password</label>
+             <input type="password" name="password">
+        </p>
+        {% if errors["empty_field"] %}
+		    <h style="color: red; font-size: 2rem">This is required field</h>
+	    {% endif %}
+        {% if errors["wrong_data"] %}
+            <h style="color: red; font-size: 2rem"> Password or email is incorrect </h>
+        {% endif %}
+        <p>
+            <input type="submit" value="login" name="login">
+            <input type="submit" value="registration" name="registration">
+        </p>
+
     </form>
 
 </body>
